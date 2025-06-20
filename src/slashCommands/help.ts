@@ -27,7 +27,7 @@ const exportCommand: SlashCommand = {
                     { name: "📊 Profile", value: "`/profile`" },
                     { name: "🎐 Other", value: "`/help` `/about` `/ping`" }
                 )
-                .setFooter({ text: `Trackalot V${process.env.VERSION} • Made by Trackalot`, iconURL: botPfp });
+                .setFooter({ text: `Trackalot V${process.env.VERSION} • Made by Taskalot`, iconURL: botPfp });
             return interaction.reply({ embeds: [Embed] });
         };
 
@@ -42,7 +42,7 @@ const exportCommand: SlashCommand = {
             .setTitle(`Help: ${command ? "/" : ""}${helpCommand}`)
             .setColor(embedColor)
             .setThumbnail(botPfp)
-            .setFooter({ text: `Trackalot V${process.env.VERSION} • Made by Trackalot`, iconURL: botPfp });
+            .setFooter({ text: `Trackalot V${process.env.VERSION} • Made by Taskalot`, iconURL: botPfp });
 
         // Try to match the help page
         switch (helpCommand) {

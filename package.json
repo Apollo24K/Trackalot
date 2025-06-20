@@ -12,7 +12,8 @@
         "@discordjs/rest": "^1.1.0",
         "@types/node": "^18.7.14",
         "discord.js": "14.15.2",
-        "dotenv": "^16.0.2"
+        "dotenv": "^16.0.2",
+        "pg": "^8.11.1"
     },
     "devDependencies": {
         "typescript": "^4.8.2"
