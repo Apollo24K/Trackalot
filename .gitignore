@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables & Config
+.env
+config.js
+config.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Images & Audios
+Images/
+Audio/
+
+# Storage files
+Storage/
+*.sqlite
+*.db
+
+# Build output
+build/
+
+# Various
+responsetimes.json
+response_time_plot.png
