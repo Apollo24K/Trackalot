@@ -1,7 +1,7 @@
 {
     "name": "trackalot",
     "version": "0.1.0",
-    "description": "Contribution track for Trackalot",
+    "description": "Contribution tracker for Trackalot",
     "main": "build/index.js",
     "scripts": {
         "start": "node .",
