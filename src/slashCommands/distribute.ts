@@ -60,7 +60,8 @@ const exportCommand: SlashCommand = {
                     });
 
                     await updateUsers(targetUser.id, {
-                        stamps: { type: "increment", value: amount }
+                        stamps: { type: "increment", value: amount },
+                        stamps_total: { type: "increment", value: amount }
                     });
 
                     // Log contribution

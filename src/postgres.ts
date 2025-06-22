@@ -45,14 +45,14 @@ const createTables = async () => {
         transactions JSONB[] DEFAULT ARRAY[]::JSONB[] NOT NULL,
 
         -- Roles
-        isAdmin BOOLEAN DEFAULT FALSE NOT NULL,
-        isDeveloper BOOLEAN DEFAULT FALSE NOT NULL,
-        isOverseer BOOLEAN DEFAULT FALSE NOT NULL,
-        isCoordinator BOOLEAN DEFAULT FALSE NOT NULL,
-        isGroupLead BOOLEAN DEFAULT FALSE NOT NULL,
+        is_admin BOOLEAN DEFAULT FALSE NOT NULL,
+        is_developer BOOLEAN DEFAULT FALSE NOT NULL,
+        is_overseer BOOLEAN DEFAULT FALSE NOT NULL,
+        is_coordinator BOOLEAN DEFAULT FALSE NOT NULL,
+        is_group_lead BOOLEAN DEFAULT FALSE NOT NULL,
 
         -- Permissions
-        canAssignStamps BOOLEAN DEFAULT FALSE NOT NULL
+        can_assign_stamps BOOLEAN DEFAULT FALSE NOT NULL
 
     )`);
 

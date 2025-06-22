@@ -36,14 +36,14 @@ interface UserSchema {
     transactions: RankShopTransaction[];
 
     // Roles
-    isAdmin: boolean;
-    isDeveloper: boolean;
-    isOverseer: boolean;
-    isCoordinator: boolean;
-    isGroupLead: boolean;
+    is_admin: boolean;
+    is_developer: boolean;
+    is_overseer: boolean;
+    is_coordinator: boolean;
+    is_group_lead: boolean;
 
     // Permissions
-    canAssignStamps: boolean;
+    can_assign_stamps: boolean;
 }
 
 interface ServerSchema {

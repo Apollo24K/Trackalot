@@ -1,5 +1,5 @@
 import { ComponentType, SlashCommandBuilder } from "discord.js";
-import { SlashCommand } from "../types";
+import { SlashCommand, UpdateUserOptions } from "../types";
 import { Emojis, OfferRow } from "../shared/components";
 import { updateUsers, getUserSchema, insertNewContribution } from "../shared/queries";
 
@@ -36,7 +36,7 @@ const exportCommand: SlashCommand = {
     async execute({ interaction, author }) {
 
         // Check if user has permission to assign stamps
-        if (!author.schema.canAssignStamps) return interaction.reply({ content: "❌ You don't have permission to grant stamps!", ephemeral: true });
+        if (!author.schema.can_assign_stamps) return interaction.reply({ content: "❌ You don't have permission to grant stamps!", ephemeral: true });
 
         const grantType = interaction.options.getString('type', true) as 'reward' | 'pool';
         const targetUser = interaction.options.getUser('user', true);
@@ -66,9 +66,11 @@ const exportCommand: SlashCommand = {
                 if (r.customId === "cancel") return interaction.followUp({ content: "Grant cancelled.", ephemeral: true });
 
                 try {
-                    await updateUsers(targetUser.id, {
+                    const updateObject: UpdateUserOptions = {
                         [stampType]: { type: "increment", value: amount }
-                    });
+                    };
+                    if (grantType === 'reward') updateObject.stamps_total = { type: "increment", value: amount };
+                    await updateUsers(targetUser.id, updateObject);
 
                     // Log contribution
                     if (grantType === 'reward') {
