@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { AttachmentBuilder, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../types";
 import { query } from "../postgres";
 import { insertNewBan, unbanUser } from "../shared/queries";
@@ -76,9 +76,19 @@ const exportCommand: SlashCommand = {
 
         // Query DB
         if (cmd === "query") {
-            if (args[0].toUpperCase() === "DROP" || args[0].toUpperCase() === "ALTER" || args[0].toUpperCase() === "DELETE" || args[0].toUpperCase() === "TRUNCATE" || args[0].toUpperCase() === "CREATE") return interaction.reply({ content: "not allowed", ephemeral });
-            const res = await query(args.join(" ") + (user ? ` WHERE id = ${user.id}` : "")) as any[];
-            if (res.length) return interaction.reply({ content: JSON.stringify(res).slice(0, 2000), ephemeral });
+            const flags = args.filter(arg => arg.startsWith("--")).map(flag => flag.slice(2));
+            args = args.filter(arg => !arg.startsWith("--"));
+
+            if (args[0].toUpperCase() === "DROP") return interaction.reply({ content: "not allowed", ephemeral });
+            const res = await query(args.join(" ") + (user ? ` WHERE id = '${user.id}'` : ""));
+
+            if (Array.isArray(res)) {
+                if (flags.includes("txt")) {
+                    const attachment = new AttachmentBuilder(Buffer.from(JSON.stringify(res, null, 2) ?? "", 'utf-8'), { name: 'data.txt' });
+                    return interaction.reply({ files: [attachment], content: JSON.stringify(res).slice(0, 2000), ephemeral });
+                };
+                return interaction.reply({ content: JSON.stringify(res).slice(0, 2000), ephemeral });
+            };
             return interaction.reply({ content: "Action Successful", ephemeral });
         };
 
