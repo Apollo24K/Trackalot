@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, ChannelType, TextBasedChannel, ComponentType, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { SlashCommandBuilder, ChannelType, ComponentType, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildBasedChannel } from "discord.js";
 import { SlashCommand } from "../types";
 import { uuidv4 } from "../functions";
 import { Emojis, OfferRow } from "../shared/components";
@@ -37,7 +37,7 @@ const command = new SlashCommandBuilder()
         .addChannelOption(option =>
             option.setName('channel')
                 .setDescription('The channel to post the task in (defaults to current channel)')
-                .addChannelTypes(ChannelType.GuildText, ChannelType.GuildAnnouncement)
+                .addChannelTypes(ChannelType.GuildText)
                 .setRequired(false)))
     .addSubcommand(subcommand => subcommand
         .setName('view')
@@ -63,7 +63,8 @@ const exportCommand: SlashCommand = {
             const rewards = interaction.options.getString('rewards', true);
             const body = interaction.options.getString('body', true);
             const pingRole = interaction.options.getRole('ping');
-            const targetChannel = interaction.options.getChannel('channel') as TextBasedChannel || await interaction.guild?.channels.fetch("1386333991694504068");;
+            const targetChannelSelection = interaction.options.getChannel('channel');
+            const targetChannel = await interaction.guild?.channels.fetch(targetChannelSelection?.id || "1386333991694504068");
             const uuid = uuidv4();
 
             // Validate that the target channel is sendable
