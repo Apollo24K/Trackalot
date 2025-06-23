@@ -1,7 +1,7 @@
 import { Interaction, PermissionsBitField } from "discord.js";
 import { BotEvent, Locale } from "../types";
-import { Links } from "../shared/components";
-import { addUserToServer, getServerSchema, getUserSchema, insertNewServer, insertNewUser } from "../shared/queries";
+import { Emojis, Links } from "../shared/components";
+import { addUserToServer, addUserToTaskPost, getServerSchema, getUserSchema, insertNewServer, insertNewUser, isUserInTaskPost, removeUserFromTaskPost } from "../shared/queries";
 
 const event: BotEvent = {
     name: "interactionCreate",
@@ -76,7 +76,22 @@ const event: BotEvent = {
         // Defer Buttons
         if (interaction.isButton()) {
             if (interaction.customId?.startsWith("ignore_defer")) return;
-            interaction.deferUpdate().catch(() => {
+
+            if (interaction.customId.startsWith("join-task-")) {
+                const taskId = interaction.customId.slice(10);
+
+                const isInTaskPost = await isUserInTaskPost(taskId, interaction.user.id);
+
+                if (isInTaskPost) {
+                    await removeUserFromTaskPost(taskId, interaction.user.id);
+                    return interaction.reply({ content: `You've been removed from the waitlist!`, ephemeral: true });
+                } else {
+                    await addUserToTaskPost(taskId, interaction.user.id);
+                    return interaction.reply({ content: `Thank you, you've been added to the waitlist!\nWe will get back to you if we should need your help ${Emojis.Bruckenpanzeri}`, ephemeral: true });
+                };
+            };
+
+            await interaction.deferUpdate().catch(() => {
                 console.log(`ERROR 'deferUpdate()' Button Interaction with customId "${interaction.customId}" Failed`);
             });
         };

@@ -72,6 +72,18 @@ const createTables = async () => {
         created TIMESTAMP DEFAULT NOW()
     )`);
 
+    await query(`CREATE TABLE IF NOT EXISTS task_posts (
+        id UUID PRIMARY KEY,
+        title TEXT NOT NULL,
+        requirements TEXT NOT NULL,
+        rewards TEXT NOT NULL,
+        body TEXT NOT NULL,
+        intro TEXT,
+        interested_users TEXT[] DEFAULT ARRAY[]::TEXT[] NOT NULL,
+        status TEXT DEFAULT 'active' NOT NULL CHECK (status IN ('active', 'completed', 'cancelled')),
+        created TIMESTAMP DEFAULT NOW()
+    )`);
+
     await query(`CREATE TABLE IF NOT EXISTS contributions (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id TEXT NOT NULL,

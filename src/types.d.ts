@@ -62,6 +62,18 @@ interface BanSchema {
     created: Date;
 }
 
+interface TaskPostSchema {
+    id: string;
+    title: string;
+    requirements: string;
+    rewards: string;
+    body: string;
+    intro: string | null;
+    interested_users: string[];
+    status: string;
+    created: Date;
+}
+
 interface ContributionSchema {
     id: string;
     user_id: string;

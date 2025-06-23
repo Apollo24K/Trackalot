@@ -1,9 +1,9 @@
 import { query } from "../postgres";
-import { UserSchema, ServerSchema, BanSchema, ContributionSchema, UpdateUserOptions } from "../types";
+import { UserSchema, ServerSchema, BanSchema, ContributionSchema, UpdateUserOptions, TaskPostSchema } from "../types";
 
-//-------------------//
-// SELECT STATEMENTS //
-//-------------------//
+//----------------//
+// SELECT SCHEMAS //
+//----------------//
 
 export const getUserSchema = async (userId: string): Promise<UserSchema | undefined> => {
     const [user] = await query(`SELECT * FROM users WHERE id = $1`, [userId]) as UserSchema[];
@@ -50,6 +50,21 @@ export const getBanSchemas = async (userIds: "*" | string[]): Promise<BanSchema[
     return bans;
 };
 
+export const getTaskPostSchema = async (taskId: string): Promise<TaskPostSchema | undefined> => {
+    const [task] = await query(`SELECT * FROM task_posts WHERE id = $1`, [taskId]) as TaskPostSchema[];
+    return task;
+};
+
+export const getTaskPostSchemas = async (taskIds: "*" | string[]): Promise<TaskPostSchema[]> => {
+    if (taskIds === "*") {
+        const tasks = await query(`SELECT * FROM task_posts`) as TaskPostSchema[];
+        return tasks;
+    };
+
+    const tasks = await query(`SELECT * FROM task_posts WHERE id = ANY($1)`, [taskIds]) as TaskPostSchema[];
+    return tasks;
+};
+
 export const getContributionSchema = async (contributionId: string): Promise<ContributionSchema | undefined> => {
     const [contribution] = await query(`SELECT * FROM contributions WHERE id = $1`, [contributionId]) as ContributionSchema[];
     return contribution;
@@ -67,9 +82,18 @@ export const getContributionSchemas = async (contributionIds: "*" | string[]): P
 
 
 
+//-------------------//
+// SELECT STATEMENTS //
+//-------------------//
+
 export const getContributorCount = async (): Promise<number> => {
     const [{ contributors }] = await query(`SELECT COUNT(*) AS contributors FROM users`) as { contributors: number; }[];
     return contributors;
+};
+
+export const isUserInTaskPost = async (taskId: string, userId: string): Promise<boolean> => {
+    const [task] = await query(`SELECT * FROM task_posts WHERE id = $1 AND $2 = ANY(interested_users)`, [taskId, userId]) as TaskPostSchema[];
+    return task ? true : false;
 };
 
 
@@ -92,6 +116,11 @@ export const insertNewServer = async (id: string, name: string, userIds: string[
 export const insertNewBan = async (id: string, banned_by: string, reason?: string, expires?: Date): Promise<BanSchema> => {
     const { rows: [ban] } = await query(`INSERT INTO bans (id, banned_by, reason, expires) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING RETURNING *`, [id, banned_by, reason ?? null, expires ?? null]) as { rows: BanSchema[]; };
     return ban;
+};
+
+export const insertNewTaskPost = async (id: string, title: string, requirements: string, rewards: string, body: string, intro: string | null): Promise<TaskPostSchema> => {
+    const { rows: [task] } = await query(`INSERT INTO task_posts (id, title, requirements, rewards, body, intro) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (id) DO NOTHING RETURNING *`, [id, title, requirements, rewards, body, intro || null]) as { rows: TaskPostSchema[]; };
+    return task;
 };
 
 export const insertNewContribution = async (userId: string, awardedBy: string, stampsAwarded: number, description?: string): Promise<ContributionSchema> => {
@@ -121,6 +150,14 @@ export const unbanUser = async (userId: string): Promise<void> => {
 
 export const addUserToServer = async (serverId: string, userId: string): Promise<void> => {
     await query(`UPDATE servers SET user_ids = array_append(user_ids, $1) WHERE id = $2 AND NOT $1 = ANY(user_ids)`, [userId, serverId]);
+};
+
+export const addUserToTaskPost = async (taskId: string, userId: string): Promise<void> => {
+    await query(`UPDATE task_posts SET interested_users = array_append(interested_users, $1) WHERE id = $2 AND NOT $1 = ANY(interested_users)`, [userId, taskId]);
+};
+
+export const removeUserFromTaskPost = async (taskId: string, userId: string): Promise<void> => {
+    await query(`UPDATE task_posts SET interested_users = array(select distinct unnest(array_remove(interested_users, $1))) WHERE id = $2`, [userId, taskId]);
 };
 
 export const updateUsers = async (

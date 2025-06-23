@@ -86,4 +86,5 @@ export enum Links {
 
 export enum Emojis {
     Stamps = "🎟️",
+    Bruckenpanzeri = "<:bruckenpanzeri:1386658686826713098>"
 };
