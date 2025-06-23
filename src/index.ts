@@ -8,10 +8,17 @@ config();
 const tokens: { token: string, id: string; }[] = process.env.TOKENS.split(",").map((token, index) => ({ token, id: process.env.CLIENT_IDS.split(",")[index] }));
 
 const clients = tokens.map(() => new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages],
+    intents: [
+        GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages,
+
+        GatewayIntentBits.GuildMembers,     // Privileged Intent
+        // GatewayIntentBits.MessageContent // Privileged Intent Required
+    ],
     partials: [Partials.Channel],
     makeCache: Options.cacheWithLimits({
         MessageManager: 0,
+        DMMessageManager: 0,
+        GuildMessageManager: 0,
         UserManager: 0,
     }),
     shards: "auto",
